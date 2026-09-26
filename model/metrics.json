@@ -1,0 +1,20 @@
+{
+  "champion": "gradient_boosting",
+  "results": {
+    "logistic_regression": {
+      "accuracy": 0.9488517745302714,
+      "log_loss": 0.11078956687250557,
+      "race_top1_accuracy": 0.5833333333333334
+    },
+    "random_forest": {
+      "accuracy": 0.9498956158663883,
+      "log_loss": 0.11912570084886398,
+      "race_top1_accuracy": 0.5
+    },
+    "gradient_boosting": {
+      "accuracy": 0.954070981210856,
+      "log_loss": 0.10725209285819608,
+      "race_top1_accuracy": 0.6041666666666666
+    }
+  }
+}

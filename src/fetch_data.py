@@ -12,7 +12,7 @@ OUTPUT_FILE = "data/races.csv"
 
 COLUMNS = ["season","round","race_name","circuit","date",
            "driver_code","driver_id","constructor","grid",
-           "position","position_order","points","laps","status",]
+           "position","position_order","points","laps","status","position_text"]
 
 
 def fetch_season_results(season: int)-> list[dict]:
@@ -44,11 +44,12 @@ def fetch_season_results(season: int)-> list[dict]:
                     "driver_id": result["Driver"]["driverId"],
                     "constructor": result["Constructor"]["name"],
                     "grid": result["grid"],
-                    "position": result.get("position"),
-                    "position_order": result.get("positionOrder"),
-                    "points": result.get("points"),
-                    "laps": result.get("laps"),
+                    "position": int(result["position"]),
+                    "position_order": int(result["position"]),
+                    "points": float(result["points"]),
+                    "laps": int(result["laps"]),
                     "status": result.get("status"),
+                    "position_text": result.get("positionText"),
                 })
 
         total = int(data["MRData"]["total"])

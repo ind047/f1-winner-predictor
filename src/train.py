@@ -1,6 +1,8 @@
 import json
 import joblib
 import pandas as pd
+import mlflow
+import mlflow.sklearn
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, log_loss
@@ -12,7 +14,7 @@ MODEL_DIR = "model"
 SPLIT_YEAR = 2024
 SEED = 42
 
-
+mlflow.set_experiment("f1-winner-prediction")
 NUMERIC = ["grid","constructor_strength"]
 CATEGORICAL = ["circuit","constructor"]
 
@@ -65,14 +67,22 @@ def main() -> None:
     results = {}
 
     for name, model in build_models().items():
-        model.fit(X_train, y_train)
-        y_prob = model.predict_proba(X_test)[:,1]
-        acc = accuracy_score(y_test, y_prob>=0.5)
-        ll = log_loss(y_test, y_prob)
-        top1 = race_top1_accuracy(test, y_prob)
-        results[name] = {"accuracy":acc, "log_loss":ll, "race_top1_accuracy":top1}
-        print(f"\n{name}: driver-acc {acc:.3f}, log-loss {ll:.3f}, race-top1 {top1:.3f}")
-
+        with mlflow.start_run(run_name=name):
+            model.fit(X_train, y_train)
+            mlflow.sklearn.log_model(model, f"{name}_model")
+            y_prob = model.predict_proba(X_test)[:,1]
+            acc = accuracy_score(y_test, y_prob>=0.5)
+            ll = log_loss(y_test, y_prob)
+            top1 = race_top1_accuracy(test, y_prob)
+            results[name] = {"accuracy":acc, "log_loss":ll, "race_top1_accuracy":top1}
+            print(f"\n{name}: driver-acc {acc:.3f}, log-loss {ll:.3f}, race-top1 {top1:.3f}")
+            mlflow.log_param("split_year", SPLIT_YEAR)
+            mlflow.log_param("SEED",SEED)
+            mlflow.log_param("n_train_rows", len(X_train))
+            mlflow.log_metrics({"accuracy":acc, "log_loss":ll, "race_top1_accuracy":top1})
+            mlflow.sklearn.log_model(model,artifact_path="model")
+        
+        
         best = min(results, key = lambda k:results[k]["log_loss"])
         print(f"\nChampion: {best}")
         build_models()[best].fit(X_train, y_train)

@@ -85,9 +85,10 @@ def main() -> None:
         
         best = min(results, key = lambda k:results[k]["log_loss"])
         print(f"\nChampion: {best}")
-        build_models()[best].fit(X_train, y_train)
+        champion =build_models()[best]
+        champion.fit(X_train, y_train)
         joblib.dump(
-            {"model":build_models()[best],f"feature_columns":
+            {"model":champion,f"feature_columns":
             list(X_train.columns)},
               f"{MODEL_DIR}/model.joblib",)
         with open(f"{MODEL_DIR}/metrics.json","w") as f:

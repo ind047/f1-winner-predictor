@@ -47,7 +47,7 @@ def test_invalid_grid_rejected(client):
 def test_unkown_constructor_is_graceful(client):
     """Unknown constructor should be treated as 0 in the one-hot vector."""
     r = client.post("/predict", json={**FAVORITE, "constructor": "NotAConstructor"})
-    assert r.status_code == 200, f"Unknown constructor should be accepted"
+    assert r.status_code == 200, "Unknown constructor should be accepted"
     p = r.json()["win_probability"]
     assert 0.0 <= p <= 1.0, f"Probability {p} should be in [0,1]"
 

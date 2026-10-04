@@ -88,7 +88,7 @@ def main() -> None:
         champion =build_models()[best]
         champion.fit(X_train, y_train)
         joblib.dump(
-            {"model":champion,f"feature_columns":
+            {"model":champion,"feature_columns":
             list(X_train.columns)},
               f"{MODEL_DIR}/model.joblib",)
         with open(f"{MODEL_DIR}/metrics.json","w") as f:
